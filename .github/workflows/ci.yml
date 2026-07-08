@@ -5,8 +5,20 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version Bump Type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
 
 jobs:
   test:
@@ -38,13 +50,15 @@ jobs:
       - name: Run Tests
         run: pnpm test
 
-  publish:
+  release:
     needs: test
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -59,7 +73,27 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Publish Package
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump Version
+        run: pnpm version ${{ github.event.inputs.bump_type }}
+
+      - name: Push Changes and Tags
+        run: |
+          git push origin main
+          git push origin --tags
+
+      - name: Publish to NPM
         run: pnpm publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          gh release create v$VERSION --title "v$VERSION" --generate-notes
