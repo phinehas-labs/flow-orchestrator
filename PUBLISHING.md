@@ -50,7 +50,7 @@ pnpm build
 
 ## 3. Automated Publishing via GitHub Actions (Continuous Delivery)
 
-Publishing is fully automated. The workflow supports two release pathways depending on your preference.
+Publishing is fully automated. Whenever you push a version tag (e.g. `v1.0.1`), the CI will automatically test it, compile the TypeScript files, publish to NPM, and create a GitHub Release.
 
 ### Step A: Configure NPM Authentication (One-time Setup)
 1. Go to [npmjs.com](https://www.npmjs.com/) and log in.
@@ -61,12 +61,7 @@ Publishing is fully automated. The workflow supports two release pathways depend
 6. Open your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**.
 7. Name the secret `NPM_TOKEN` and paste your copied token value.
 
----
-
-### Pathway 1: Release by pushing a tag (Standard Developer Flow)
-
-Whenever you push a Git version tag (e.g. `v1.0.1`), the CI will automatically test it, compile the TypeScript files, publish to NPM, and create a GitHub Release.
-
+### Step B: How to Trigger a Release
 1. Increment the version in your local `package.json` and generate the Git tag locally:
    ```bash
    pnpm version patch  # or minor / major
@@ -75,18 +70,4 @@ Whenever you push a Git version tag (e.g. `v1.0.1`), the CI will automatically t
    ```bash
    git push origin main --tags
    ```
-3. **That's it!** The CI/CD workflow will detect the tag, run tests, compile the bundle, publish to NPM, and create the GitHub Release.
-
----
-
-### Pathway 2: Release via the GitHub UI (One-Click Flow)
-
-If you prefer not to use your terminal for tagging/pushing, you can trigger a release directly on GitHub.
-
-1. Make sure all your code changes are committed and pushed to the `main` branch.
-2. Go to your GitHub repository -> click on the **Actions** tab.
-3. In the left sidebar, click the **CI/CD** workflow.
-4. Click the **Run workflow** dropdown on the right side of the workflow page.
-5. Choose the **Version Bump Type** (`patch`, `minor`, or `major`).
-6. Click the green **Run workflow** button.
-7. The CI will test, bump the version code inside `package.json`, commit/tag it back to the repo, publish to NPM, and create the GitHub Release automatically.
+3. **That's it!** The CI/CD workflow will automatically detect the tag, run the tests, compile the bundle, publish to NPM, and create the GitHub Release.

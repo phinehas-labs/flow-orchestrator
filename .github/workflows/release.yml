@@ -4,17 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
-    inputs:
-      bump_type:
-        description: 'Version Bump Type'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
 
 permissions:
   contents: write
@@ -55,8 +44,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -71,22 +58,6 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Configure Git (Manual Release only)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump Version (Manual Release only)
-        if: github.event_name == 'workflow_dispatch'
-        run: pnpm version ${{ github.event.inputs.bump_type }}
-
-      - name: Push Changes and Tags (Manual Release only)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          git push origin main
-          git push origin --tags
-
       - name: Publish to NPM
         run: pnpm publish --access public --no-git-checks
         env:
@@ -96,10 +67,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            VERSION=$(node -p "require('./package.json').version")
-            TAG="v$VERSION"
-          else
-            TAG="${{ github.ref_name }}"
-          fi
-          gh release create "$TAG" --title "$TAG" --generate-notes || echo "Release $TAG already exists."
+          gh release create "${{ github.ref_name }}" --title "${{ github.ref_name }}" --generate-notes || echo "Release ${{ github.ref_name }} already exists."
