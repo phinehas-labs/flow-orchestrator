@@ -50,7 +50,7 @@ pnpm build
 
 ## 3. Automated Publishing via GitHub Actions (Continuous Delivery)
 
-Publishing is fully automated. Whenever you push a version tag (e.g. `v1.0.1`), the CI will automatically test it, compile the TypeScript files, publish to NPM, and create a GitHub Release.
+Publishing is fully automated. Whenever you push a commit with a new version number in your `package.json` to the `main` branch, the CI will automatically detect it, run the tests, create the tag, push it to GitHub, publish to NPM, and generate a GitHub Release.
 
 ### Step A: Configure NPM Authentication (One-time Setup)
 1. Go to [npmjs.com](https://www.npmjs.com/) and log in.
@@ -62,12 +62,17 @@ Publishing is fully automated. Whenever you push a version tag (e.g. `v1.0.1`), 
 7. Name the secret `NPM_TOKEN` and paste your copied token value.
 
 ### Step B: How to Trigger a Release
-1. Increment the version in your local `package.json` and generate the Git tag locally:
+1. Increment the version in your local `package.json`:
    ```bash
    pnpm version patch  # or minor / major
    ```
-2. Push your commits and tags to GitHub:
+2. Push your commits to GitHub `main` branch:
    ```bash
-   git push origin main --tags
+   git push origin main
    ```
-3. **That's it!** The CI/CD workflow will automatically detect the tag, run the tests, compile the bundle, publish to NPM, and create the GitHub Release.
+3. **That's it!** The CI/CD workflow will automatically:
+   * Run the test suite on Node.js `18.x` and `20.x`.
+   * Detect that a new version `vX.Y.Z` has been specified in `package.json` (by checking if the tag already exists).
+   * Automatically tag the commit as `vX.Y.Z` and push it to GitHub.
+   * Publish the package to NPM under the `@phinehas-labs` scope.
+   * Create the GitHub Release page with auto-generated release notes.

@@ -1,9 +1,10 @@
-name: Release
+name: CI/CD
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -40,10 +41,13 @@ jobs:
 
   release:
     needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -58,13 +62,39 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Publish to NPM
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create GitHub Release
+      - name: Check and Publish Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          gh release create "${{ github.ref_name }}" --title "${{ github.ref_name }}" --generate-notes || echo "Release ${{ github.ref_name }} already exists."
+          # Fetch all remote tags to compare
+          git fetch --tags
+          
+          # Read current version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v$VERSION"
+          
+          echo "Current package version: $VERSION"
+          
+          # Check if tag already exists in the repository
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Version $VERSION (tag $TAG) has already been released. Skipping release."
+          else
+            echo "New version detected: $VERSION. Starting release process..."
+            
+            # Configure git user
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            
+            # Create and push the Git tag
+            git tag "$TAG"
+            git push origin "$TAG"
+            
+            # Compile and publish to NPM
+            pnpm publish --access public --no-git-checks
+            
+            # Create the GitHub Release
+            gh release create "$TAG" --title "$TAG" --generate-notes
+            
+            echo "Successfully released version $VERSION!"
+          fi
