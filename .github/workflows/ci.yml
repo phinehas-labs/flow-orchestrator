@@ -108,4 +108,4 @@ jobs:
           else
             TAG="${{ github.ref_name }}"
           fi
-          gh release create "$TAG" --title "$TAG" --generate-notes
+          gh release create "$TAG" --title "$TAG" --generate-notes || echo "Release $TAG already exists."
