@@ -1,4 +1,4 @@
-# @chainconsults/flow-orchestrator
+# @phinehas-labs/flow-orchestrator
 
 A lightweight, framework-agnostic engine designed to define, scan, generate, and execute ordered API integration flows. Built with full TypeScript support, type safety, and seamless NestJS compatibility.
 
@@ -19,11 +19,11 @@ A lightweight, framework-agnostic engine designed to define, scan, generate, and
 ## Installation
 
 ```bash
-pnpm add @chainconsults/flow-orchestrator
+pnpm add @phinehas-labs/flow-orchestrator
 # or
-npm install @chainconsults/flow-orchestrator
+npm install @phinehas-labs/flow-orchestrator
 # or
-yarn add @chainconsults/flow-orchestrator
+yarn add @phinehas-labs/flow-orchestrator
 ```
 
 Make sure to install `reflect-metadata` in your project if you plan to use decorators:
@@ -38,7 +38,7 @@ pnpm add reflect-metadata
 You can define steps manually and execute them without any framework bindings:
 
 ```typescript
-import { Orchestrator } from '@chainconsults/flow-orchestrator';
+import { Orchestrator } from '@phinehas-labs/flow-orchestrator';
 
 // Initialize the Orchestrator
 const orchestrator = new Orchestrator({
@@ -100,7 +100,7 @@ Use `@Step`, `@DependsOn`, and `@Store` decorators to configure the endpoints:
 
 ```typescript
 import { Controller, Post, Body } from '@nestjs/common';
-import { Step, DependsOn, Store } from '@chainconsults/flow-orchestrator';
+import { Step, DependsOn, Store } from '@phinehas-labs/flow-orchestrator';
 
 @Controller('users')
 export class UserController {
@@ -139,7 +139,7 @@ Import `OrchestratorModule` into your `AppModule`:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { OrchestratorModule } from '@chainconsults/flow-orchestrator';
+import { OrchestratorModule } from '@phinehas-labs/flow-orchestrator';
 
 @Module({
   imports: [
@@ -176,4 +176,4 @@ interface OrchestratorOptions {
 
 ## License
 
-MIT © ChainConsults
+MIT © Phinehas Labs
