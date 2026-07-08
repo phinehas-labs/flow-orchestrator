@@ -50,7 +50,7 @@ pnpm build
 
 ## 3. Automated Publishing via GitHub Actions (Continuous Delivery)
 
-Publishing is fully automated. You do not need to run manual Git command sequences or create tags locally. You can trigger a new release with a single click in the GitHub user interface.
+Publishing is fully automated. The workflow supports two release pathways depending on your preference.
 
 ### Step A: Configure NPM Authentication (One-time Setup)
 1. Go to [npmjs.com](https://www.npmjs.com/) and log in.
@@ -61,20 +61,32 @@ Publishing is fully automated. You do not need to run manual Git command sequenc
 6. Open your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**.
 7. Name the secret `NPM_TOKEN` and paste your copied token value.
 
-### Step B: How to Trigger a Release
+---
+
+### Pathway 1: Release by pushing a tag (Standard Developer Flow)
+
+Whenever you push a Git version tag (e.g. `v1.0.1`), the CI will automatically test it, compile the TypeScript files, publish to NPM, and create a GitHub Release.
+
+1. Increment the version in your local `package.json` and generate the Git tag locally:
+   ```bash
+   pnpm version patch  # or minor / major
+   ```
+2. Push your commits and tags to GitHub:
+   ```bash
+   git push origin main --tags
+   ```
+3. **That's it!** The CI/CD workflow will detect the tag, run tests, compile the bundle, publish to NPM, and create the GitHub Release.
+
+---
+
+### Pathway 2: Release via the GitHub UI (One-Click Flow)
+
+If you prefer not to use your terminal for tagging/pushing, you can trigger a release directly on GitHub.
+
 1. Make sure all your code changes are committed and pushed to the `main` branch.
 2. Go to your GitHub repository -> click on the **Actions** tab.
 3. In the left sidebar, click the **CI/CD** workflow.
 4. Click the **Run workflow** dropdown on the right side of the workflow page.
 5. Choose the **Version Bump Type** (`patch`, `minor`, or `major`).
 6. Click the green **Run workflow** button.
-
-### What the Workflow Does Automatically:
-1. Runs the test suite on Node.js `18.x` and `20.x` to guarantee code stability.
-2. Configures a Git agent in the runner.
-3. Automatically increments the version inside `package.json` (e.g., `1.0.0` -> `1.0.1` for a `patch` bump).
-4. Commits the version bump and tags it (e.g. `v1.0.1`).
-5. Pushes the commit and tag back to the GitHub repository.
-6. Builds the TypeScript compiler output.
-7. Publishes the compiled package to NPM under the `@phinehas-labs` scope.
-8. Creates a **GitHub Release** with auto-generated release notes detailing changes since the last version.
+7. The CI will test, bump the version code inside `package.json`, commit/tag it back to the repo, publish to NPM, and create the GitHub Release automatically.
