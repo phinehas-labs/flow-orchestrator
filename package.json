@@ -1,6 +1,6 @@
 {
   "name": "@phinehas-labs/flow-orchestrator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A framework-agnostic engine for defining, generating, and executing ordered API integration flows.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
