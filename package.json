@@ -1,5 +1,5 @@
 {
-  "name": "@phinehas-lab/flow-orchestrator",
+  "name": "@phinehas-labs/flow-orchestrator",
   "version": "1.0.0",
   "description": "A framework-agnostic engine for defining, generating, and executing ordered API integration flows.",
   "main": "dist/index.js",
@@ -9,12 +9,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/phinehas-lab/flow-orchestrator.git"
+    "url": "git+https://github.com/phinehas-labs/flow-orchestrator.git"
   },
   "bugs": {
-    "url": "https://github.com/phinehas-lab/flow-orchestrator/issues"
+    "url": "https://github.com/phinehas-labs/flow-orchestrator/issues"
   },
-  "homepage": "https://github.com/phinehas-lab/flow-orchestrator#readme",
+  "homepage": "https://github.com/phinehas-labs/flow-orchestrator#readme",
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "pnpm build",
